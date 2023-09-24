@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          fontFamily: {
+            poppins: ["Poppins"],
+          },
+          extend: {},
+        },
+      };
+    </script>
+    <style>
+      ::-webkit-scrollbar {
+        width: 0;
+      }
+    </style>
+  </head>
+  <body class="font-poppin flex min-h-screen bg-slate-700">
+    <div
+      class="bg-slate-600 fixed top-7 left-5 flex gap-2 py-2 px-3 rounded-md min-w-0 transition-all duration-1000 hover:pr-[100px] group"
+    >
+      <span
+        class="aksi inline-block bg-red-500 w-5 h-5 rounded-full cursor-pointer"
+        id="bg-red-100"
+      ></span>
+      <span
+        class="aksi inline-block bg-yellow-500 w-5 h-5 rounded-full cursor-pointer"
+        id="bg-yellow-100"
+      ></span>
+      <span
+        class="aksi inline-block bg-green-500 w-5 h-5 rounded-full cursor-pointer"
+        id="bg-green-100"
+      ></span>
+      <span
+        class="opacity-0 absolute transition-all duration-1000 right-0 group-hover:opacity-95 pointer-events-none select-none"
+        >😗😗😗</span
+      >
+    </div>
+
+    <div
+      class="relative w-[350px] bg-slate-500 m-auto p-10 rounded-xl shadow-xl md:w-[400px] xl:w-[500px]"
+    >
+      <h1 class="text-center text-3xl text-slate-100 font-bold">
+        <span class="text-slate-800">Mystery</span> chat
+      </h1>
+      <p class="mt-2 text-sm text-center text-slate-200 font-semibold">
+        hallo apa ada kata untukku hari ini
+      </p>
+      <form class="mt-5 mx-auto" name="chatMistery">
+        <textarea
+          name="pesan"
+          class="block w-full rounded-xl outline-none p-2 font-bold tracking-wider bg-slate-400 text-slate-800 scroll-m-0 text-xl min-h-[300px] max-h-[400px]"
+          autofocus
+        ></textarea>
+        <button
+          type="submit"
+          class="ml-[50%] -translate-x-[50%] inline-block mt-3 py-2 px-10 bg-slate-800 rounded-full text-slate-400 text-xl font-semibold tracking-wider hover:bg-slate-700 active:bg-slate-900"
+        >
+          kirim
+        </button>
+        <div
+          class="absolute rounded-md bottom-5 right-5 p-2 bg-slate-400 cursor-pointer hover:bg-slate-600"
+          id="randomKata"
+        >
+          🎁
+        </div>
+      </form>
+    </div>
+
+    <div
+      class="terkirim fixed left-0 top-0 right-0 bottom-0 backdrop-blur-xl transition-all duration-500 hidden"
+    >
+      <div
+        class="pesan m-auto p-10 bg-slate-500 text-slate-700 font-bold scale-125"
+      ></div>
+    </div>
+
+    <script>
+      document.querySelectorAll(".aksi").forEach((aksi) => {
+        aksi.addEventListener("click", () => {
+          document.body.classList.remove(document.body.classList[3]);
+          document.body.classList.add(aksi.id);
+        });
+      });
+      document.querySelector("textarea").addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = this.scrollHeight + "px";
+      });
+
+      function aksiAlert(pesan) {
+        document.querySelector(".pesan").textContent = pesan;
+        document
+          .querySelector(".terkirim")
+          .classList.remove(document.querySelector(".terkirim").classList[9]);
+        document.querySelector(".terkirim").classList.add("flex");
+        setTimeout(() => {
+          document.querySelector(".terkirim").classList.remove("flex");
+          document.querySelector(".terkirim").classList.add("hidden");
+        }, 1500);
+      }
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbzegLI7B4L1XZelJDqlQODhfDOAwFOT-qrsE8ZcbmCe5Qj-DeG6rxcaN-0GGVXmNafzeg/exec";
+      const form = document.forms["chatMistery"];
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (document.querySelector("textarea").value.trim() !== "") {
+          aksiAlert("pesan sukses di kirim");
+          fetch(scriptURL, { method: "POST", body: new FormData(form) })
+            .then((response) => console.log("Success!", response))
+            .catch((error) => console.error("Error!", error.message));
+          document.querySelector("textarea").value = "";
+        } else {
+          aksiAlert("gagal, pesan kosong");
+        }
+      });
+
+      async function random() {
+        let kata = "";
+        const respons = await fetch(
+          "https://candaan-api.vercel.app/api/text/random"
+        );
+        const data = await respons.json();
+        kata = data.data;
+        return kata;
+      }
+
+      document
+        .getElementById("randomKata")
+        .addEventListener("click", async () => {
+          document.querySelector("textarea").value = await random();
+        });
+    </script>
+  </body>
+</html>
